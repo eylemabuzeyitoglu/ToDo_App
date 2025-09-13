@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:to_do_app/data/local_storage.dart';
+import 'package:to_do_app/main.dart';
 import 'package:to_do_app/model/task_model.dart';
+import 'package:to_do_app/widget/task_list_item.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,11 +14,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late List<Task> _allTask;
+  late LocalStorage _localStorage;
 
   @override
   void initState() {
     super.initState();
+    _localStorage = locator<LocalStorage>();
     _allTask = <Task>[];
+    getAllTaskFromDb();
   }
 
   @override
@@ -43,16 +49,32 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          var oankiListeElemani = _allTask[index];
-          return ListTile(
-            title: Text(oankiListeElemani.name + ' ' + oankiListeElemani.id),
-            subtitle: Text(oankiListeElemani.createdAt.toString()),
-          );
-        },
-        itemCount: _allTask.length,
-      ),
+      body: _allTask.isNotEmpty
+          ? ListView.builder(
+              itemBuilder: (context, index) {
+                var oankiListeElemani = _allTask[index];
+                return Dismissible(
+                  background: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.delete, color: Colors.grey),
+                      SizedBox(width: 8),
+                      Text('Bu göreev silindi'),
+                    ],
+                  ),
+                  key: Key(oankiListeElemani.id),
+                  onDismissed: (direction) {
+                    setState(() {
+                      _allTask.removeAt(index);
+                      _localStorage.deleteTask(task: oankiListeElemani);
+                    });
+                  },
+                  child: TaskItem(task: oankiListeElemani),
+                );
+              },
+              itemCount: _allTask.length,
+            )
+          : Center(child: Text('Hadi Görev Ekle')),
     );
   }
 
@@ -67,6 +89,7 @@ class _HomePageState extends State<HomePage> {
           width: MediaQuery.of(context).size.width,
           child: ListTile(
             title: TextField(
+              autofocus: true,
               style: TextStyle(fontSize: 20),
               decoration: InputDecoration(
                 hintText: 'Görev nedir?',
@@ -78,14 +101,16 @@ class _HomePageState extends State<HomePage> {
                   DatePicker.showTimePicker(
                     context,
                     showSecondsColumn: false,
-                    onConfirm: (time) {
+                    onConfirm: (time){
                       var yeniEklenecekGorev = Task.create(
                         name: value,
                         createdAt: time,
                       );
-                      setState(() {
+                      setState(()async {
                         _allTask.add(yeniEklenecekGorev);
+                         await _localStorage.addTask(task: yeniEklenecekGorev);
                       });
+                     
                     },
                   );
                 }
@@ -95,5 +120,10 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  void getAllTaskFromDb() async {
+    _allTask = await _localStorage.getAllTask();
+    setState(() {});
   }
 }
