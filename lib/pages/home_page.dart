@@ -3,6 +3,7 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:to_do_app/data/local_storage.dart';
 import 'package:to_do_app/main.dart';
 import 'package:to_do_app/model/task_model.dart';
+import 'package:to_do_app/widget/custom_search_delegate.dart';
 import 'package:to_do_app/widget/task_list_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,17 +22,18 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _localStorage = locator<LocalStorage>();
     _allTask = <Task>[];
-    getAllTaskFromDb();
+    
   }
 
   @override
   Widget build(BuildContext context) {
+    _getAllTaskFromDb();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: GestureDetector(
           onTap: () {
-            _showAddTaskBottomSheet(context);
+            _showAddTaskBottomSheet();
           },
           child: Text(
             'Bugün Neler Yapacaksın?',
@@ -40,10 +42,15 @@ class _HomePageState extends State<HomePage> {
         ),
         centerTitle: false,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.search)),
           IconButton(
             onPressed: () {
-              _showAddTaskBottomSheet(context);
+              _showSearchPage();
+            },
+            icon: Icon(Icons.search),
+          ),
+          IconButton(
+            onPressed: () {
+              _showAddTaskBottomSheet();
             },
             icon: Icon(Icons.add),
           ),
@@ -78,7 +85,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showAddTaskBottomSheet(BuildContext context) {
+  void _showAddTaskBottomSheet() {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -122,8 +129,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void getAllTaskFromDb() async {
+  void _getAllTaskFromDb() async {
     _allTask = await _localStorage.getAllTask();
     setState(() {});
+  }
+
+  void _showSearchPage() {
+    showSearch(
+      context: context,
+      delegate: CustomSearchDelegate(allTask: _allTask),
+    );
+    _getAllTaskFromDb();
   }
 }
