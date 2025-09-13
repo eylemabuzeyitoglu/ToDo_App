@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:to_do_app/data/local_storage.dart';
+import 'package:to_do_app/helper/translation_helper.dart';
 import 'package:to_do_app/main.dart';
 import 'package:to_do_app/model/task_model.dart';
 import 'package:to_do_app/widget/custom_search_delegate.dart';
@@ -22,7 +24,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _localStorage = locator<LocalStorage>();
     _allTask = <Task>[];
-    
   }
 
   @override
@@ -35,10 +36,7 @@ class _HomePageState extends State<HomePage> {
           onTap: () {
             _showAddTaskBottomSheet();
           },
-          child: Text(
-            'Bugün Neler Yapacaksın?',
-            style: TextStyle(color: Colors.black),
-          ),
+          child: Text('title', style: TextStyle(color: Colors.black)).tr(),
         ),
         centerTitle: false,
         actions: [
@@ -66,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Icon(Icons.delete, color: Colors.grey),
                       SizedBox(width: 8),
-                      Text('Bu göreev silindi'),
+                      Text('remove_task').tr(),
                     ],
                   ),
                   key: Key(oankiListeElemani.id),
@@ -81,7 +79,7 @@ class _HomePageState extends State<HomePage> {
               },
               itemCount: _allTask.length,
             )
-          : Center(child: Text('Hadi Görev Ekle')),
+          : Center(child: Text('empty_task_list').tr()),
     );
   }
 
@@ -99,7 +97,7 @@ class _HomePageState extends State<HomePage> {
               autofocus: true,
               style: TextStyle(fontSize: 20),
               decoration: InputDecoration(
-                hintText: 'Görev nedir?',
+                hintText: 'add_task'.tr(),
                 border: InputBorder.none,
               ),
               onSubmitted: (value) {
@@ -107,6 +105,7 @@ class _HomePageState extends State<HomePage> {
                 if (value.length > 3) {
                   DatePicker.showTimePicker(
                     context,
+                    locale: TranslationHelper.getDeviceLanguage(context),
                     showSecondsColumn: false,
                     onConfirm: (time) async {
                       var yeniEklenecekGorev = Task.create(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do_app/data/local_storage.dart';
 import 'package:to_do_app/main.dart';
@@ -48,7 +49,7 @@ class CustomSearchDelegate extends SearchDelegate {
                   children: [
                     Icon(Icons.delete, color: Colors.grey),
                     SizedBox(width: 8),
-                    Text('Bu göreev silindi'),
+                    Text('remove_task').tr(),
                   ],
                 ),
                 key: Key(oankiListeElemani.id),
@@ -61,7 +62,7 @@ class CustomSearchDelegate extends SearchDelegate {
             },
             itemCount: filteredList.length,
           )
-        : Center(child: Text('Aradığınızı bulamadık'));
+        : Center(child: Text('search_not_found').tr());
   }
 
   @override
