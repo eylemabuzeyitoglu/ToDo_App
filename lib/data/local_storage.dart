@@ -33,7 +33,7 @@ class HiveLocalStorage extends LocalStorage {
     _allTask = _taskBox.values.toList();
 
     if (_allTask.isNotEmpty) {
-      _allTask.sort((Task a, Task b) => a.createdAt.compareTo(b.createdAt));
+      _allTask.sort((Task a, Task b) => b.createdAt.compareTo(a.createdAt));
     }
 
     return _allTask;

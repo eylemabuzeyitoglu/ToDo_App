@@ -101,16 +101,16 @@ class _HomePageState extends State<HomePage> {
                   DatePicker.showTimePicker(
                     context,
                     showSecondsColumn: false,
-                    onConfirm: (time){
+                    onConfirm: (time) async {
                       var yeniEklenecekGorev = Task.create(
                         name: value,
                         createdAt: time,
                       );
-                      setState(()async {
-                        _allTask.add(yeniEklenecekGorev);
-                         await _localStorage.addTask(task: yeniEklenecekGorev);
+                      _allTask.insert(0, yeniEklenecekGorev);
+                      await _localStorage.addTask(task: yeniEklenecekGorev);
+                      setState(() {
+                        //_allTask.add(yeniEklenecekGorev);
                       });
-                     
                     },
                   );
                 }
